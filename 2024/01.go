@@ -23,8 +23,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Print("Advent of Code 2024 01a")
+	log.Print("Advent of Code 2024 01")
 	var a, b []int
+	counts := make(map[int]int)
 
 	file, err := os.Open("./input-01")
 	if err != nil {
@@ -36,55 +37,38 @@ func main() {
 
 	for scanner.Scan() {
 		match := r.FindStringSubmatch(scanner.Text())
-		// log.Print("match: ", match)
+
 		ai, err := strconv.Atoi(match[1])
 		if err != nil {
 			log.Fatal(err)
 		}
+
 		bi, err := strconv.Atoi(match[2])
 		if err != nil {
 			log.Fatal(err)
 		}	
+
 		a = append(a, ai)
 		b = append(b, bi)
+		counts[bi] = counts[bi] + 1
 	}
 
-	log.Print("a: ", len(a), "(", cap(a), ") b: ", len(b), "(", cap(b), ")")
+	log.Print(len(a), " as and ", len(b), " bs")
+	log.Print("first 8 as and bs")
 	log.Print(a[:8])
 	log.Print(b[:8])
 
 	slices.Sort(a)
 	slices.Sort(b)
 
+	log.Print("first 8 sorted as and bs")
 	log.Print(a[:8])
 	log.Print(b[:8])
 
-	var sum int
-	for i, _ := range a {
-		sum += abs(a[i] - b[i])
-	}
-
-	b_index, b_count := advance(0, b)
-
-	var match_sum int64
-	match_loop:
-	for i, left := range a {
-		log.Print("at ", i, " with value ", left)
-
-		for {
-			if left <= b[b_index] {
-				break
-			}
-			b_index, b_count = advance(b_index + 1, b)
-			if b_index == len(b) {
-				break match_loop
-			}
-		}
-
-		if left == b[b_index] {
-			log.Print("adding ", left * b_count)
-			match_sum += int64(left * b_count)
-		}
+	var sum, match_sum int
+	for i, el := range a {
+		sum += abs(el - b[i])
+		match_sum += el * counts[el]
 	}
 
 	log.Print("Sum of absolute differences: ", sum)
@@ -93,24 +77,4 @@ func main() {
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
-}
-
-func advance(start_index int, values []int) (int, int) {
-	if start_index >= len(values) {
-		log.Print("Advance: start index past end of values")
-		return start_index, 0
-	}
-
-	index := start_index
-	count := 1
-	
-	for {
-		if index + 1 >= len(values) || values[index] != values[index + 1] {
-			break
-		}
-		index++
-		count++
-	}
-	log.Print("Advanced to '", values[index], "' at: ", index, ", count: ", count)
-	return index, count
 }
