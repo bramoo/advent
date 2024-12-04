@@ -9,13 +9,6 @@ import (
 	"strconv"
 )
 
-func abs(x int) int {
-	if x < 0 {
-		return -x
-	}
-	return x
-}
-
 func main() {
 
 	r, err := regexp.Compile("(\\d+)\\s+(\\d+)")
@@ -67,7 +60,12 @@ func main() {
 
 	var sum, match_sum int
 	for i, el := range a {
-		sum += abs(el - b[i])
+		diff := el - b[i]
+		if diff < 0 {
+			sum -= diff
+		} else {
+			sum += diff
+		}
 		match_sum += el * counts[el]
 	}
 
