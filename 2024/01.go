@@ -20,7 +20,7 @@ func main() {
 	var a, b []int
 	counts := make(map[int]int)
 
-	file, err := os.Open("./input-01")
+	file, err := os.Open("./example-01")
 	if err != nil {
 		log.Fatal(err)
 	}
