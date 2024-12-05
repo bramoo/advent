@@ -10,10 +10,9 @@ import (
 
 func main() {
 
-	r, err := regexp.Compile("mul\\((\\d{1,3}),(\\d{1,3})\\)")
-	if err != nil {
-		log.Fatal(err)
-	}
+	r, _ := regexp.Compile("mul\\((\\d{1,3}),(\\d{1,3})\\)")
+	rdo, _ := regexp.Compile("do\\(\\)")
+	rdont, _ := regexp.Compile("don't\\(\\)")
 
 	log.Print("Advent of Code 2024 03")
 
@@ -24,28 +23,51 @@ func main() {
 	defer file.Close()
 
 	mulSum := 0
+	conditionalMulSum := 0
+	do := true
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		matches := r.FindAllStringSubmatch(scanner.Text(), -1)
-
-		for _, match := range matches {
-			log.Print(match)
-			ai, err := strconv.Atoi(match[1])
-			if err != nil {
-				log.Fatal(err)
+		text := scanner.Text()
+		for {
+			log.Print(text)
+			var nextDoSwitch []int
+			if do {
+				nextDoSwitch = rdont.FindStringIndex(text)
+			} else {
+				nextDoSwitch = rdo.FindStringIndex(text)
 			}
 
-			bi, err := strconv.Atoi(match[2])
-			if err != nil {
-				log.Fatal(err)
-			}	
+			log.Print("do: ", do, ", next switch: ", nextDoSwitch)
 
-			log.Print("match with values ", ai, " and ", bi)
-			mulSum += ai * bi
+			match := r.FindStringSubmatchIndex(text)
+			log.Print("mul: ", match)
+
+			if nextDoSwitch != nil && (match == nil || nextDoSwitch[0] < match[0]) {
+				do = !do
+				text = text[nextDoSwitch[1]:]
+				continue
+			}
+
+			if match == nil {
+				break
+			}
+
+			log.Print("do: ", do, ", match: ", text[match[0]:match[1]])
+			x, _ := strconv.Atoi(text[match[2]:match[3]])
+			y, _ := strconv.Atoi(text[match[4]:match[5]])
+			
+			mulSum += x * y
+			
+			if do {
+				conditionalMulSum += x * y
+			}
+
+			text = text[match[1]:]
 		}
 	}
 
-	log.Print("sum of mul instructions ", mulSum)
+	log.Print("sum of mul instructions: ", mulSum)
+	log.Print("sum of mul instructions in do: ", conditionalMulSum)
 
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
