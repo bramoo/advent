@@ -11,9 +11,9 @@ import (
 
 func main() {
 
-	log.Print("Advent of Code 2024 04")
+	log.Print("Advent of Code 2024 05")
 
-	file, err := os.Open("./input-04")
+	file, err := os.Open("./example-05")
 	if err != nil {
 		log.Fatal(err)
 	}

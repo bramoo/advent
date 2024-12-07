@@ -11,7 +11,7 @@ func main() {
 
 	log.Print("Advent of Code 2024 06")
 
-	file, err := os.Open("./input-06")
+	file, err := os.Open("./example-06")
 	if err != nil {
 		log.Fatal(err)
 	}
